@@ -1,84 +1,92 @@
-const terminal = document.getElementById("terminal");
-const scene = document.getElementById("loveScene");
-const button = document.getElementById("decrypt");
-const text = document.getElementById("text");
+const terminalText = document.getElementById("text");
+const decrypt = document.getElementById("decrypt");
 
-
-const boot = [
-"[ SYSTEM ] Booting Heart Core...",
-"[ SYSTEM ] Searching encrypted emotions...",
-"[ FOUND ] LOVE_MESSAGE.dat",
-"[ SECURITY ] Blood encryption enabled...",
-"[ READY ] Waiting for decryption..."
+const messages = [
+    "[ SYSTEM ] Initializing Heart_PROTOCOL_v2.0...",
+    "[ STATUS ] Searching encrypted love file...",
+    "[ FOUND ] LOVE_MESSAGE.dat",
+    "[ SECURITY ] Blood encryption activated...",
+    "[ STATUS ] Ready to decrypt..."
 ];
 
 
-let a=0,b=0;
+let line = 0;
+let char = 0;
 
 
-function bootAnimation(){
+function typeEffect(){
 
-    if(a < boot.length){
+    if(line < messages.length){
 
-        if(b < boot[a].length){
+        if(char < messages[line].length){
 
-            text.innerHTML += boot[a][b];
-            b++;
+            terminalText.innerHTML += messages[line][char];
 
-            setTimeout(bootAnimation,35);
+            char++;
+
+            setTimeout(typeEffect,45);
 
         }else{
 
-            text.innerHTML+="<br>";
-            a++;
-            b=0;
+            terminalText.innerHTML += "<br>";
 
-            setTimeout(bootAnimation,300);
+            line++;
+            char=0;
+
+            setTimeout(typeEffect,500);
         }
+
     }
+
 }
 
-bootAnimation();
+typeEffect();
 
 
 
-button.onclick=()=>{
+decrypt.onclick = ()=>{
 
-    terminal.style.opacity="0";
+    document.getElementById("terminal").style.opacity="0";
 
     setTimeout(()=>{
 
-        terminal.style.display="none";
-        scene.style.display="block";
+        document.getElementById("terminal").style.display="none";
+        document.getElementById("loveScene").style.display="block";
 
-        createHeart();
+        startHeart();
 
-    },1000);
+    },1200);
 
 };
 
 
 
 
-// HEART ENGINE
+// HEART ANIMATION
 
 
-function createHeart(){
+function startHeart(){
+
 
 const canvas=document.getElementById("heartCanvas");
 const ctx=canvas.getContext("2d");
 
 
-let W=canvas.width=innerWidth;
-let H=canvas.height=innerHeight;
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
 
-window.onresize=()=>{
+let W=canvas.width;
+let H=canvas.height;
+
+
+
+window.addEventListener("resize",()=>{
 
 W=canvas.width=innerWidth;
 H=canvas.height=innerHeight;
 
-};
+});
 
 
 
@@ -86,25 +94,22 @@ let particles=[];
 
 
 
-function heartPoint(t){
-
-let x =
-16*Math.pow(Math.sin(t),3);
-
-
-let y =
-13*Math.cos(t)
--5*Math.cos(2*t)
--2*Math.cos(3*t)
--Math.cos(4*t);
-
+function heartShape(t){
 
 return {
-x:x*15,
-y:-y*15
+
+x:16*Math.pow(Math.sin(t),3),
+
+y:
+-(13*Math.cos(t)
+-5*Math.cos(2*t)
+-2*Math.cos(3*t)
+-Math.cos(4*t))
+
 };
 
 }
+
 
 
 
@@ -114,75 +119,97 @@ class LoveParticle{
 constructor(){
 
 
-let t=Math.random()*Math.PI*2;
-
-let p=heartPoint(t);
+let angle=Math.random()*Math.PI*2;
 
 
-this.tx=W/2+p.x;
-this.ty=H/2+p.y;
+let point=heartShape(angle);
 
+
+
+this.targetX =
+W/2 + point.x*18;
+
+
+
+this.targetY =
+H/2 + point.y*18;
+
+
+
+
+// start far away
 
 this.x=Math.random()*W;
+
 this.y=Math.random()*H;
 
 
-this.z=Math.random()*2;
+
+this.size=
+Math.random()*7+8;
 
 
-this.speed=Math.random()*0.025+0.015;
 
+this.speed=
+Math.random()*0.004+0.002;
 
-this.size=Math.random()*12+8;
 
 
 this.word=[
 "I love you",
-"love",
-"forever",
-"❤️"
+"I love you",
+"love you forever",
+"forever"
 ]
-[
-Math.floor(Math.random()*4)
-];
+[Math.floor(Math.random()*4)];
 
 
-this.angle=Math.random()*Math.PI*2;
+
+this.offset=Math.random()*20;
+
 
 
 }
+
 
 
 update(){
 
+this.x +=
+(this.targetX-this.x)
+*this.speed;
 
-this.x+=(this.tx-this.x)*this.speed;
-this.y+=(this.ty-this.y)*this.speed;
 
-
-this.angle+=0.01;
+this.y +=
+(this.targetY-this.y)
+*this.speed;
 
 
 }
 
 
 
-draw(scale){
+draw(){
+
+
+let time=Date.now()*0.001;
+
+
+
+// blur in and out
+
+let blur =
+12 + Math.sin(time+this.offset)*10;
+
+
+
+let alpha =
+0.35+
+Math.sin(time+this.offset)*0.35;
+
 
 
 ctx.save();
-
-
-ctx.translate(
-this.x,
-this.y
-);
-
-
-ctx.rotate(
-Math.sin(this.angle)*0.2
-);
-
 
 
 ctx.font=
@@ -190,35 +217,45 @@ ctx.font=
 
 
 
-ctx.fillStyle="#8b1028";
+ctx.fillStyle=
+`rgba(150,15,45,${alpha})`;
 
 
-ctx.shadowColor="#c81d3a";
 
-ctx.shadowBlur=20;
+ctx.shadowColor=
+"#c81d3a";
+
+
+
+ctx.shadowBlur=
+blur;
 
 
 
 ctx.fillText(
 this.word,
-0,
-0
+this.x,
+this.y
 );
+
 
 
 ctx.restore();
 
 
-}
-
-
 
 }
 
 
 
+}
 
-for(let i=0;i<1200;i++){
+
+
+
+// more particles = softer heart
+
+for(let i=0;i<3000;i++){
 
 particles.push(
 new LoveParticle()
@@ -229,26 +266,6 @@ new LoveParticle()
 
 
 
-// floating blood dust
-
-
-let dust=[];
-
-
-for(let i=0;i<150;i++){
-
-dust.push({
-
-x:Math.random()*W,
-y:Math.random()*H,
-s:Math.random()*3+1
-
-});
-
-}
-
-
-
 let beat=0;
 
 
@@ -256,18 +273,51 @@ let beat=0;
 function animate(){
 
 
-ctx.fillStyle="rgba(0,0,0,0.18)";
-
-ctx.fillRect(0,0,W,H);
-
+ctx.fillStyle=
+"rgba(0,0,0,0.12)";
 
 
-beat+=0.05;
+ctx.fillRect(
+0,
+0,
+W,
+H
+);
 
 
-let heartBeat =
+
+beat+=0.025;
+
+
+
+let pulse =
 1+
-Math.sin(beat)*0.04;
+Math.sin(beat)*0.035;
+
+
+
+ctx.save();
+
+
+
+ctx.translate(
+W/2,
+H/2
+);
+
+
+
+ctx.scale(
+pulse,
+pulse
+);
+
+
+
+ctx.translate(
+-W/2,
+-H/2
+);
 
 
 
@@ -275,56 +325,18 @@ particles.forEach(p=>{
 
 p.update();
 
-p.draw(
-heartBeat
-);
+p.draw();
 
 });
 
 
 
-// dust animation
-
-
-dust.forEach(d=>{
-
-
-d.y-=0.3;
-
-
-if(d.y<0)
-d.y=H;
-
-
-
-ctx.beginPath();
-
-ctx.arc(
-d.x,
-d.y,
-d.s,
-0,
-Math.PI*2
-);
-
-
-ctx.fillStyle=
-"rgba(200,29,58,.5)";
-
-
-ctx.shadowBlur=15;
-
-ctx.shadowColor="#c81d3a";
-
-
-ctx.fill();
-
-
-});
+ctx.restore();
 
 
 
 requestAnimationFrame(animate);
+
 
 
 }
@@ -332,5 +344,6 @@ requestAnimationFrame(animate);
 
 
 animate();
+
 
 }
