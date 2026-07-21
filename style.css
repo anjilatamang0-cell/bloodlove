@@ -1,0 +1,190 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at center, #200008 0%, #050000 55%, #000 100%);
+    font-family: "Courier New", monospace;
+    color:#c81d3a;
+}
+
+
+/* TERMINAL INTRO */
+
+#terminal{
+    position:absolute;
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:5;
+}
+
+
+#text{
+    width:80%;
+    max-width:700px;
+    min-height:160px;
+
+    color:#8b1028;
+    font-size:18px;
+    line-height:32px;
+
+    text-shadow:
+        0 0 5px #7a0018,
+        0 0 15px #c81d3a;
+}
+
+
+#decrypt{
+
+    margin-top:40px;
+
+    padding:15px 35px;
+
+    background:#100003;
+
+    color:#c81d3a;
+
+    border:2px solid #7a0018;
+
+    font-size:18px;
+
+    letter-spacing:3px;
+
+    cursor:pointer;
+
+    transition:.4s;
+
+    box-shadow:
+        0 0 10px #7a0018,
+        inset 0 0 15px #5a0010;
+
+}
+
+
+#decrypt:hover{
+
+    background:#4a0010;
+
+    color:white;
+
+    transform:scale(1.08);
+
+    box-shadow:
+        0 0 20px #c81d3a,
+        0 0 50px #7a0018;
+
+}
+
+
+
+/* HEART SCENE */
+
+
+#loveScene{
+
+    display:none;
+
+    width:100%;
+    height:100vh;
+
+    position:relative;
+
+}
+
+
+#heartCanvas{
+
+    width:100%;
+    height:100%;
+
+}
+
+
+.title{
+
+    position:absolute;
+
+    bottom:40px;
+
+    width:100%;
+
+    text-align:center;
+
+    color:#c81d3a;
+
+    font-size:28px;
+
+    letter-spacing:8px;
+
+    text-shadow:
+
+        0 0 5px #7a0018,
+        0 0 20px #c81d3a;
+
+    animation:pulse 2s infinite;
+
+}
+
+
+
+
+@keyframes pulse{
+
+    0%{
+        opacity:.6;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:1;
+        transform:scale(1.05);
+    }
+
+    100%{
+        opacity:.6;
+        transform:scale(1);
+    }
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    #text{
+
+        font-size:14px;
+
+        line-height:25px;
+
+    }
+
+
+    #decrypt{
+
+        font-size:14px;
+
+        padding:12px 20px;
+
+    }
+
+
+    .title{
+
+        font-size:20px;
+
+    }
+
+}
