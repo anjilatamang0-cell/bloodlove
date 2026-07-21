@@ -1,261 +1,323 @@
-const terminalText = document.getElementById("text");
-const decrypt = document.getElementById("decrypt");
+const terminal = document.getElementById("terminal");
+const scene = document.getElementById("loveScene");
+const button = document.getElementById("decrypt");
+const text = document.getElementById("text");
 
-const terminalLines = [
-    "[ SYSTEM ] Initializing Heart_PROTOCOL_v2.0...",
-    "[ STATUS ] Searching encrypted message...",
-    "[ STATUS ] Love package found.",
-    "[ SECURITY ] Encryption level: RED",
-    "[ STATUS ] Ready to decrypt..."
+
+const boot = [
+"[ SYSTEM ] Booting Heart Core...",
+"[ SYSTEM ] Searching encrypted emotions...",
+"[ FOUND ] LOVE_MESSAGE.dat",
+"[ SECURITY ] Blood encryption enabled...",
+"[ READY ] Waiting for decryption..."
 ];
 
 
-let line = 0;
-let char = 0;
+let a=0,b=0;
 
 
-function typing(){
+function bootAnimation(){
 
-    if(line < terminalLines.length){
+    if(a < boot.length){
 
-        if(char < terminalLines[line].length){
+        if(b < boot[a].length){
 
-            terminalText.innerHTML += terminalLines[line][char];
+            text.innerHTML += boot[a][b];
+            b++;
 
-            char++;
-
-            setTimeout(typing,40);
+            setTimeout(bootAnimation,35);
 
         }else{
 
-            terminalText.innerHTML += "<br>";
+            text.innerHTML+="<br>";
+            a++;
+            b=0;
 
-            line++;
-
-            char=0;
-
-            setTimeout(typing,400);
+            setTimeout(bootAnimation,300);
         }
-
     }
-
 }
 
-
-typing();
-
+bootAnimation();
 
 
-decrypt.onclick = ()=>{
 
-    document.getElementById("terminal").style.display="none";
+button.onclick=()=>{
 
-    document.getElementById("loveScene").style.display="block";
+    terminal.style.opacity="0";
 
-    startHeart();
+    setTimeout(()=>{
+
+        terminal.style.display="none";
+        scene.style.display="block";
+
+        createHeart();
+
+    },1000);
 
 };
 
 
 
 
-// HEART CANVAS
+// HEART ENGINE
 
 
-function startHeart(){
+function createHeart(){
 
 const canvas=document.getElementById("heartCanvas");
-
 const ctx=canvas.getContext("2d");
 
 
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+let W=canvas.width=innerWidth;
+let H=canvas.height=innerHeight;
+
+
+window.onresize=()=>{
+
+W=canvas.width=innerWidth;
+H=canvas.height=innerHeight;
+
+};
+
 
 
 let particles=[];
 
 
-const words=[
-    "I love you",
-    "love",
-    "forever",
-    "❤️"
-];
+
+function heartPoint(t){
+
+let x =
+16*Math.pow(Math.sin(t),3);
+
+
+let y =
+13*Math.cos(t)
+-5*Math.cos(2*t)
+-2*Math.cos(3*t)
+-Math.cos(4*t);
+
+
+return {
+x:x*15,
+y:-y*15
+};
+
+}
 
 
 
-class Particle{
+class LoveParticle{
 
 
 constructor(){
 
-    let t=Math.random()*Math.PI*2;
+
+let t=Math.random()*Math.PI*2;
+
+let p=heartPoint(t);
 
 
-    let scale=15;
+this.tx=W/2+p.x;
+this.ty=H/2+p.y;
 
 
-    this.x=
-    canvas.width/2+
-    scale*
-    16*
-    Math.pow(Math.sin(t),3);
+this.x=Math.random()*W;
+this.y=Math.random()*H;
 
 
-
-    this.y=
-    canvas.height/2
-    -
-    scale*
-    (
-        13*Math.cos(t)
-        -
-        5*Math.cos(2*t)
-        -
-        2*Math.cos(3*t)
-        -
-        Math.cos(4*t)
-    );
+this.z=Math.random()*2;
 
 
-    this.targetX=this.x;
-
-    this.targetY=this.y;
+this.speed=Math.random()*0.025+0.015;
 
 
-
-    this.x=Math.random()*canvas.width;
-
-    this.y=Math.random()*canvas.height;
+this.size=Math.random()*12+8;
 
 
+this.word=[
+"I love you",
+"love",
+"forever",
+"❤️"
+]
+[
+Math.floor(Math.random()*4)
+];
 
-    this.speed=Math.random()*0.02+0.01;
 
-
-    this.size=Math.random()*14+8;
-
-
-    this.text=
-    words[
-        Math.floor(Math.random()*words.length)
-    ];
+this.angle=Math.random()*Math.PI*2;
 
 
 }
-
 
 
 update(){
 
-    this.x +=
-    (this.targetX-this.x)
-    *this.speed;
+
+this.x+=(this.tx-this.x)*this.speed;
+this.y+=(this.ty-this.y)*this.speed;
 
 
-    this.y +=
-    (this.targetY-this.y)
-    *this.speed;
-
-
-}
-
-
-
-draw(){
-
-    ctx.font=
-    `${this.size}px Courier New`;
-
-
-    ctx.fillStyle=
-    "#8b1028";
-
-
-    ctx.shadowColor=
-    "#c81d3a";
-
-
-    ctx.shadowBlur=15;
-
-
-    ctx.fillText(
-        this.text,
-        this.x,
-        this.y
-    );
-
-}
+this.angle+=0.01;
 
 
 }
 
 
 
-
-for(let i=0;i<700;i++){
-
-    particles.push(new Particle());
-
-}
+draw(scale){
 
 
+ctx.save();
 
-let pulse=0;
+
+ctx.translate(
+this.x,
+this.y
+);
 
 
-function animate(){
-
-ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
+ctx.rotate(
+Math.sin(this.angle)*0.2
 );
 
 
 
-pulse+=0.03;
+ctx.font=
+`${this.size}px Courier New`;
+
+
+
+ctx.fillStyle="#8b1028";
+
+
+ctx.shadowColor="#c81d3a";
+
+ctx.shadowBlur=20;
+
+
+
+ctx.fillText(
+this.word,
+0,
+0
+);
+
+
+ctx.restore();
+
+
+}
+
+
+
+}
+
+
+
+
+for(let i=0;i<1200;i++){
+
+particles.push(
+new LoveParticle()
+);
+
+}
+
+
+
+
+// floating blood dust
+
+
+let dust=[];
+
+
+for(let i=0;i<150;i++){
+
+dust.push({
+
+x:Math.random()*W,
+y:Math.random()*H,
+s:Math.random()*3+1
+
+});
+
+}
+
+
+
+let beat=0;
+
+
+
+function animate(){
+
+
+ctx.fillStyle="rgba(0,0,0,0.18)";
+
+ctx.fillRect(0,0,W,H);
+
+
+
+beat+=0.05;
+
+
+let heartBeat =
+1+
+Math.sin(beat)*0.04;
+
 
 
 particles.forEach(p=>{
 
+p.update();
 
-    let beat =
-    1+
-    Math.sin(pulse)*0.03;
+p.draw(
+heartBeat
+);
 
-
-    p.update();
-
-
-    ctx.save();
+});
 
 
-    ctx.translate(
-        canvas.width/2,
-        canvas.height/2
-    );
+
+// dust animation
 
 
-    ctx.scale(
-        beat,
-        beat
-    );
+dust.forEach(d=>{
 
 
-    ctx.translate(
-        -canvas.width/2,
-        -canvas.height/2
-    );
+d.y-=0.3;
 
 
-    p.draw();
+if(d.y<0)
+d.y=H;
 
 
-    ctx.restore();
 
+ctx.beginPath();
+
+ctx.arc(
+d.x,
+d.y,
+d.s,
+0,
+Math.PI*2
+);
+
+
+ctx.fillStyle=
+"rgba(200,29,58,.5)";
+
+
+ctx.shadowBlur=15;
+
+ctx.shadowColor="#c81d3a";
+
+
+ctx.fill();
 
 
 });
@@ -270,16 +332,5 @@ requestAnimationFrame(animate);
 
 
 animate();
-
-
-
-window.onresize=()=>{
-
-canvas.width=window.innerWidth;
-
-canvas.height=window.innerHeight;
-
-};
-
 
 }
